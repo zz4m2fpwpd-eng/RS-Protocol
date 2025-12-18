@@ -1,0 +1,43 @@
+# ROBIN-Protocol Configuration File
+
+# System 2 Configuration
+system2:
+  orchestrator:
+    enabled: true
+    log_level: INFO
+  
+  omni_audit:
+    enabled: true
+    audit_threshold: 0.85
+  
+  research_models:
+    enabled: true
+    model_types:
+      - decision_tree
+      - random_forest
+      - gradient_boosting
+  
+  results_engine:
+    enabled: true
+    output_format: json
+  
+  evidence_pro:
+    enabled: true
+    evidence_threshold: 0.75
+
+# System 3 Configuration
+system3:
+  chronos_batch:
+    enabled: true
+    batch_size: 100
+    
+  master_index:
+    enabled: true
+    index_type: hash
+
+# General Settings
+general:
+  data_path: ./data
+  output_path: ./output
+  log_path: ./logs
+  verbose: true
