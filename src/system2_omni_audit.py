@@ -8,6 +8,7 @@ Comprehensive auditing system for data quality and model validation.
 import logging
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
 class OmniAudit:
@@ -54,8 +55,6 @@ class OmniAudit:
             dict: Performance metrics
         """
         self.logger.info("Starting model performance audit")
-        
-        from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
         
         results = {
             'accuracy': accuracy_score(y_true, y_pred),

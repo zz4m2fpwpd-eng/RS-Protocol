@@ -65,8 +65,15 @@ class ResultsEngine:
                 json.dump(results, f, indent=2, default=str)
         elif self.output_format == 'csv':
             output_file = self.output_path / f"{filename}.csv"
-            df = pd.DataFrame(results)
-            df.to_csv(output_file, index=False)
+            try:
+                df = pd.DataFrame(results)
+                df.to_csv(output_file, index=False)
+            except (ValueError, TypeError) as e:
+                self.logger.warning(f"Cannot convert results to CSV format: {e}")
+                # Fall back to JSON
+                output_file = self.output_path / f"{filename}.json"
+                with open(output_file, 'w') as f:
+                    json.dump(results, f, indent=2, default=str)
         else:
             raise ValueError(f"Unsupported output format: {self.output_format}")
         
