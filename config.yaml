@@ -1,0 +1,18 @@
+project_name: ROBIN-Protocol
+
+paths:
+  data_root: "./data"
+  results_root: "./results"
+  logs_root: "./logs"
+
+runtime:
+  n_jobs: 4
+  random_seed: 42
+  make_xlsx: true
+  make_pdf_reports: false
+
+engines:
+  omni: "src/TITAN_Omni_Protocol.py"
+  research: "src/TITAN_Research_Mode.py"
+  results: "src/TITAN_Results_Engine.py"
+  evidence: "src/TITAN_Evidence_Pro_Max.py"
