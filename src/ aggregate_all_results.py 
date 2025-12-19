@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""
+TITAN – Aggregate results for a single test folder.
+
+Behavior:
+- Ask (or accept --input) for a *single* root folder that contains TITAN outputs
+  (e.g., Titan_Evidence_Suite run directory or any new test folder).
+- Recursively collect all result artifacts (charts, logs, stats, metadata) from
+  that folder only.
+- Copy them into a *_MASTER* subfolder inside the same directory.
+
+This removes all hard-coded absolute SOURCE_DIRS.
+"""
+
+import argparse
+import os
+import shutil
+from pathlib import Path
+from typing import Iterable
+
+
+def iter_files(root: Path) -> Iterable[Path]:
+    for dirpath, _, filenames in os.walk(root):
+        d = Path(dirpath)
+        for fn in filenames:
+            yield d / fn
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Aggregate TITAN results into a local MASTER folder.")
+    parser.add_argument(
+        "--input",
+        type=str,
+        help="Root directory for a single TITAN test (results will be aggregated there). "
+             "If omitted, you will be prompted.",
+    )
+    args = parser.parse_args()
+
+    if args.input:
+        src_root = Path(args.input).expanduser()
+    else:
+        raw = input("Enter TITAN test root directory to aggregate (e.g., ./Titan_Evidence_Suite): ").strip()
+        if not raw:
+            raise SystemExit("No directory provided; exiting.")
+        src_root = Path(raw).expanduser()
+
+    if not src_root.exists() or not src_root.is_dir():
+        raise SystemExit(f"Input directory does not exist or is not a directory: {src_root}")
+
+    master_dir = src_root / f"{src_root.name}_MASTER"
+    master_dir.mkdir(parents=True, exist_ok=True)
+
+    for src_file in iter_files(src_root):
+        # Do not re-copy files already under *_MASTER
+        try:
+            src_file.relative_to(master_dir)
+            # If this succeeds, skip: file is already in MASTER
+            continue
+        except ValueError:
+            pass
+
+        rel = src_file.relative_to(src_root)
+        dest_file = master_dir / rel
+        dest_file.parent.mkdir(parents=True, exist_ok=True)
+
+        # If collision, prefix with 'dup_'
+        if dest_file.exists():
+            dest_file = dest_file.with_name(f"dup_{dest_file.name}")
+
+        shutil.copy2(src_file, dest_file)
+
+    print(f"✅ Aggregated all results for '{src_root.name}' into: {master_dir}")
+
+
+if __name__ == "__main__":
+    main()
