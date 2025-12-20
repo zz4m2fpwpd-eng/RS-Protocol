@@ -438,16 +438,25 @@ def cli_main():
     import argparse
 
     parser = argparse.ArgumentParser(description="TITAN Evidence Pro Max")
-    parser.add_argument("--input", "-i", required=False,
-                        help="Data folder or file (optional, simulation if omitted)")
-    parser.add_argument("--output", "-o", required=False,
-                        help="Output directory (ignored, uses TITAN_EVIDENCE_BENCHMARK)")
+    parser.add_argument(
+        "--input",
+        "-i",
+        required=False,
+        help="Data folder or file (optional, simulation if omitted)",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        required=False,
+        help="Output directory (ignored, uses TITAN_EVIDENCE_BENCHMARK)",
+    )
     args = parser.parse_args()
 
     run_evidence_pro(args.input or "")
 
 
 from pathlib import Path
+
 
 def run_evidence_mode(csv_path, run_dir, config_path):
     """
@@ -456,6 +465,7 @@ def run_evidence_mode(csv_path, run_dir, config_path):
     """
     return
 
+
 if __name__ == "__main__":
     # If called with args (orchestrator) → no interactive prompt
     if len(sys.argv) > 1:
@@ -463,3 +473,4 @@ if __name__ == "__main__":
     else:
         # Original interactive behavior
         run_evidence_pro()
+

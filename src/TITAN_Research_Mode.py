@@ -334,27 +334,3 @@ def run_research_mode(csv_path, run_dir, config_path):
     """
     return
 
-if __name__ == "__main__":
-    # Orchestrator / CLI mode: no interactive input
-    if len(sys.argv) > 1:
-        if sys.platform == "darwin":
-            multiprocessing.set_start_method("spawn", force=True)
-        cli_main()
-    else:
-        # Original interactive behavior
-        if sys.platform == "darwin":
-            multiprocessing.set_start_method("spawn", force=True)
-
-        print("\n[INPUT] Drag & Drop the CSV file/folder:")
-        path = (
-            input(" > ")
-            .strip()
-            .replace("'", "")
-            .replace('"', "")
-            .replace("\\ ", " ")
-        )
-
-        if not path:
-            print("❌ No path provided. Exiting.")
-        else:
-            run_research_core(path)
