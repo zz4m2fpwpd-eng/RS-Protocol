@@ -155,7 +155,7 @@ def get_user_input(path_arg=None):
     return user_metrics
 
 # ==============================================================================
-# DATA GENERATOR (Simulating System-Sandhu Impact on User Data)
+# DATA GENERATOR (Simulating RS Protocol Impact on User Data)
 # ==============================================================================
 
 def load_data(user_metrics):
@@ -167,7 +167,7 @@ def load_data(user_metrics):
     improved_bias = raw_bias * 0.05  # TITAN removes 95% of bias
     standard_bias = raw_bias * 1.3   # Standard methods usually ADD bias
     data['bias'] = pd.DataFrame({
-        'Method': ['Raw Input', 'Systematic Review', 'System-Sandhu'],
+        'Method': ['Raw Input', 'Systematic Review', 'RS Protocol'],
         'Bias_Level': [raw_bias, standard_bias, improved_bias],
         'Accuracy': [100-raw_bias, 100-standard_bias, 99.5],
     })
@@ -234,7 +234,7 @@ def generate_all_charts(DATA, USER_METRICS):
     plt.figure(figsize=(10, 6))
     x = np.random.normal(0, 1, 1000)
     sns.kdeplot(x, fill=True, color='red', label='Standard Error')
-    sns.kdeplot(x*0.1, fill=True, color='green', label='System-Sandhu Error')
+    sns.kdeplot(x*0.1, fill=True, color='green', label='RS Protocol Error')
     plt.title("Statistical Error Density", pad=20); plt.legend()
     plt.savefig(f"{DIRS['Bias']}/04_Error_Density.png"); plt.close()
 
@@ -322,7 +322,7 @@ def generate_all_charts(DATA, USER_METRICS):
     ax.plot(angles, values, color='blue')
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories)
-    plt.title("System-Sandhu Capability Radar", pad=20)
+    plt.title("RS Protocol Capability Radar", pad=20)
     plt.savefig(f"{DIRS['Security']}/12_Radar_Cap.png"); plt.close()
 
     # 13. Risk Waterfall

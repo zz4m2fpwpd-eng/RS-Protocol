@@ -89,7 +89,7 @@ def compile_pdf_report(folder, filename, report_text, charts):
         pdf.set_font("Arial", 'B', 16)
         pdf.cell(200, 10, txt=f"TITAN-RS AUDIT: {filename}", ln=1, align='C')
         pdf.set_font("Arial", size=10)
-        pdf.cell(200, 10, txt="System-Sandhu Protocol", ln=1, align='C') # Branding
+        pdf.cell(200, 10, txt="RS  Protocol", ln=1, align='C') # Branding
         pdf.ln(5)
         
         for line in report_text.split('\n'):
@@ -577,7 +577,7 @@ def run_pipeline(filepath_or_df, filename=None):
 # ==============================================================================
 def main():
     print("\n" + "="*70)
-    print("🛡️  TITAN-RS (SYSTEM-SANDHU PROTOCOL) - V1.0")
+    print("🛡️  TITAN-RS (RS  PROTOCOL) - V1.0")
     print("   Developed by: Robin Sandhu")
     print("   Features: Vogue Visuals+ | Crash Guard | Universal Charts")
     print("="*70)
