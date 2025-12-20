@@ -1,6 +1,6 @@
 # ==============================================================================
 # PROJECT: TITAN RS - SYNERGY (V53.0 - VOGUE VISUALS + ECLIPSE STABILITY)
-# AUTHOR: Dr. Sandhu
+# AUTHOR: Robin Sandhu
 # ARCHITECTURE: Crash Guard | Vogue Charts | Leak Sentinel | Py3.14 Safe
 # ==============================================================================
 import networkx as nx
