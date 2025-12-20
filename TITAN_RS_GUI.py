@@ -1,7 +1,7 @@
 # ==============================================================================
 # PROJECT: TITAN-RS (ZENITH GUI - V1.1)
 # DEVELOPER: Robin Sandhu
-# ARCHITECTURE: CustomTkinter | Threaded Core | System-Sandhu Protocol
+# ARCHITECTURE: CustomTkinter | Threaded Core | Robin Sandhu/ RS- Protocol
 # STATUS: PATCHED (Fixed missing 're' import)
 # ==============================================================================
 
@@ -217,7 +217,7 @@ class TitanGUI(ctk.CTk):
         super().__init__()
 
         # Branding & Layout
-        self.title("TITAN-RS | System-Sandhu Protocol")
+        self.title("TITAN-RS | RS Protocol")
         self.geometry("900x700")
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("dark-blue")
