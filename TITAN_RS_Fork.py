@@ -1,5 +1,5 @@
 # ==============================================================================
-# PROJECT: TITAN-RS (EXPERIMENTAL FORK VARIANT)
+# PROJECT: TITAN-RS (EXPERIMENTAL FORK VARIANT) by Robin Sandhu
 # PURPOSE: Test Multi-Core Plotting Stability on macOS
 # ARCHITECTURE: Crash Guard | Vogue Visuals+ | Multi-Core (Fork) | Py3.14 Safe
 # ==============================================================================
@@ -87,7 +87,7 @@ def compile_pdf_report(folder, filename, report_text, charts):
         pdf.set_font("Arial", 'B', 16)
         pdf.cell(200, 10, txt=f"TITAN-RS AUDIT: {filename}", ln=1, align='C')
         pdf.set_font("Arial", size=10)
-        pdf.cell(200, 10, txt="System-Sandhu Protocol (Fork Mode)", ln=1, align='C')
+        pdf.cell(200, 10, txt="RS Protocol (Fork Mode)", ln=1, align='C')
         pdf.ln(5)
         
         for line in report_text.split('\n'):
