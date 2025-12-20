@@ -1,0 +1,26 @@
+cat > .gitignore << 'EOF'
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Envs
+.env
+.venv
+
+# Data and outputs
+data/
+titan_results/
+TITAN_EVIDENCE_BENCHMARK/
+titan_batch_other/
+all_charts/
+*.csv
+*.xlsx
+*.parquet
+
+# Local config/logs
+config.yaml
+*.log
+.DS_Store
+EOF
