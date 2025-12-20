@@ -11,6 +11,22 @@ from scipy import stats
 class ResultValidator:
     """Assess validity of ML results"""
     
+    # Validation thresholds (configurable)
+    MIN_CLASS_SAMPLES_CRITICAL = 10
+    MIN_CLASS_SAMPLES_WARNING = 30
+    IMBALANCE_RATIO_CRITICAL = 100
+    IMBALANCE_RATIO_WARNING = 20
+    BASELINE_AUC = 0.5
+    BASELINE_IMPROVEMENT = 0.05
+    PRED_STD_CRITICAL = 0.01
+    PRED_STD_WARNING = 0.05
+    PROB_EXTREME_LOW = 0.01
+    PROB_EXTREME_HIGH = 0.99
+    PROB_MIDDLE_LOW = 0.4
+    PROB_MIDDLE_HIGH = 0.6
+    SAMPLE_FEATURE_RATIO_CRITICAL = 3
+    SAMPLE_FEATURE_RATIO_WARNING = 10
+    
     def __init__(self, y_true, y_pred_proba, auc_score, n_features, n_samples_train, n_samples_test):
         """
         Initialize validator with model results
@@ -47,21 +63,19 @@ class ResultValidator:
     
     def _check_test_set_size(self):
         """Ensure test set is large enough for reliable AUC"""
-        min_samples_per_class = 30
-        
         unique, counts = np.unique(self.y_true, return_counts=True)
         min_class_count = min(counts)
         
-        if min_class_count < 10:
+        if min_class_count < self.MIN_CLASS_SAMPLES_CRITICAL:
             self.flags.append(
                 f"CRITICAL: Test set too small (min class: {min_class_count} samples). "
-                f"AUC may be unreliable. Need at least 10 samples per class."
+                f"AUC may be unreliable. Need at least {self.MIN_CLASS_SAMPLES_CRITICAL} samples per class."
             )
             self.validity_score -= 30
-        elif min_class_count < min_samples_per_class:
+        elif min_class_count < self.MIN_CLASS_SAMPLES_WARNING:
             self.warnings.append(
                 f"Test set small (min class: {min_class_count} samples). "
-                f"Recommend at least {min_samples_per_class} samples per class for reliable AUC."
+                f"Recommend at least {self.MIN_CLASS_SAMPLES_WARNING} samples per class for reliable AUC."
             )
             self.validity_score -= 15
     
@@ -78,13 +92,13 @@ class ResultValidator:
         
         imbalance_ratio = max(counts) / min(counts)
         
-        if imbalance_ratio > 100:
+        if imbalance_ratio > self.IMBALANCE_RATIO_CRITICAL:
             self.flags.append(
                 f"CRITICAL: Severe class imbalance (ratio: {imbalance_ratio:.1f}:1). "
                 f"AUC may be misleading. Consider stratified sampling."
             )
             self.validity_score -= 25
-        elif imbalance_ratio > 20:
+        elif imbalance_ratio > self.IMBALANCE_RATIO_WARNING:
             self.warnings.append(
                 f"High class imbalance (ratio: {imbalance_ratio:.1f}:1). "
                 f"Interpret AUC with caution."
@@ -93,17 +107,13 @@ class ResultValidator:
     
     def _check_baseline_performance(self):
         """Check if model performs better than random chance"""
-        # For binary classification, random chance is 0.5
-        baseline_auc = 0.5
-        improvement_threshold = 0.05
-        
-        if self.auc_score < baseline_auc:
+        if self.auc_score < self.BASELINE_AUC:
             self.flags.append(
-                f"CRITICAL: AUC ({self.auc_score:.3f}) is below random chance (0.5). "
+                f"CRITICAL: AUC ({self.auc_score:.3f}) is below random chance ({self.BASELINE_AUC}). "
                 f"Model performs worse than random guessing."
             )
             self.validity_score -= 40
-        elif self.auc_score < baseline_auc + improvement_threshold:
+        elif self.auc_score < self.BASELINE_AUC + self.BASELINE_IMPROVEMENT:
             self.warnings.append(
                 f"AUC ({self.auc_score:.3f}) barely exceeds random chance. "
                 f"Model may not have learned meaningful patterns."
@@ -111,23 +121,20 @@ class ResultValidator:
             self.validity_score -= 20
     
     def _check_statistical_significance(self):
-        """Test if predictions are statistically different from random"""
-        # Use permutation test logic: are predictions better than random labels?
-        # Simple check: ensure predictions show some discrimination
-        
+        """Check if predictions show meaningful discrimination between classes"""
         if len(self.y_pred_proba) == 0:
             return
         
-        # Check if all predictions are nearly identical (no discrimination)
+        # Check prediction variance - models should discriminate between classes
         pred_std = np.std(self.y_pred_proba)
         
-        if pred_std < 0.01:
+        if pred_std < self.PRED_STD_CRITICAL:
             self.flags.append(
                 f"CRITICAL: Predictions have very low variance (std: {pred_std:.4f}). "
                 f"Model may not be discriminating between classes."
             )
             self.validity_score -= 30
-        elif pred_std < 0.05:
+        elif pred_std < self.PRED_STD_WARNING:
             self.warnings.append(
                 f"Predictions have low variance (std: {pred_std:.4f}). "
                 f"Model discrimination may be weak."
@@ -139,8 +146,9 @@ class ResultValidator:
         if len(self.y_pred_proba) == 0:
             return
         
-        # Check for suspicious patterns
-        near_extremes = np.sum((self.y_pred_proba < 0.01) | (self.y_pred_proba > 0.99))
+        # Check for suspicious patterns - too many extreme predictions
+        near_extremes = np.sum((self.y_pred_proba < self.PROB_EXTREME_LOW) | 
+                               (self.y_pred_proba > self.PROB_EXTREME_HIGH))
         pct_extremes = near_extremes / len(self.y_pred_proba) * 100
         
         if pct_extremes > 80:
@@ -151,7 +159,8 @@ class ResultValidator:
             self.validity_score -= 10
         
         # Check if predictions are mostly around 0.5 (no confidence)
-        near_middle = np.sum((self.y_pred_proba > 0.4) & (self.y_pred_proba < 0.6))
+        near_middle = np.sum((self.y_pred_proba > self.PROB_MIDDLE_LOW) & 
+                            (self.y_pred_proba < self.PROB_MIDDLE_HIGH))
         pct_middle = near_middle / len(self.y_pred_proba) * 100
         
         if pct_middle > 70:
@@ -168,13 +177,13 @@ class ResultValidator:
         
         train_ratio = self.n_samples_train / self.n_features
         
-        if train_ratio < 3:
+        if train_ratio < self.SAMPLE_FEATURE_RATIO_CRITICAL:
             self.flags.append(
                 f"CRITICAL: Very low sample-to-feature ratio ({train_ratio:.1f}:1). "
                 f"High risk of overfitting. Need more samples or fewer features."
             )
             self.validity_score -= 25
-        elif train_ratio < 10:
+        elif train_ratio < self.SAMPLE_FEATURE_RATIO_WARNING:
             self.warnings.append(
                 f"Low sample-to-feature ratio ({train_ratio:.1f}:1). "
                 f"Risk of overfitting. Consider feature selection."
