@@ -3,7 +3,7 @@
 TITAN RS UNIVERSAL ORCHESTRATOR v3.0 - WITH MASTER EXCEL BUILDER
 Parallel execution + automatic Master Excel generation per test
 Each test gets unique master file (no overwrite)
-Charts embedded + editable in Excel tabs
+Developed by Robin Sandhu
 """
 
 import sys
