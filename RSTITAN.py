@@ -9,6 +9,8 @@ import sys
 import time
 import warnings
 import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
+import traceback
 import re
 import requests
 import pandas as pd
@@ -35,6 +37,14 @@ try:
 except ImportError:
     PDF_AVAILABLE = False
     print("   [NOTE] 'fpdf' missing. Outputting folders only.")
+
+# Result Validator
+try:
+    from result_validator import validate_results
+    VALIDATOR_AVAILABLE = True
+except ImportError:
+    VALIDATOR_AVAILABLE = False
+    print("   [NOTE] 'result_validator' missing. Validation disabled.")
 
 # Configuration (VOGUE EDITION STYLE)
 matplotlib.use("Agg")
@@ -489,6 +499,26 @@ def run_pipeline(filepath_or_df, filename=None):
             y_prob = base_model.predict_proba(X_te)
             auc = roc_auc_score(y_te, y_prob, multi_class='ovr', average='macro')
             model = base_model
+        
+        # [NEW] Validate Results
+        validation_report = ""
+        validity_summary = {}
+        if VALIDATOR_AVAILABLE and len(np.unique(y))==2:
+            try:
+                print("   [VALIDATOR] Assessing result validity...")
+                validator = validate_results(
+                    y_true=y_te,
+                    y_pred_proba=y_prob,
+                    auc_score=auc,
+                    n_features=X.shape[1],
+                    n_samples_train=len(X_tr),
+                    n_samples_test=len(X_te)
+                )
+                validation_report = validator.get_report()
+                validity_summary = validator.get_summary_dict()
+                print(f"     ✓ Validity Score: {validity_summary['validity_score']}/100 ({validity_summary['validity_level']})")
+            except Exception as e:
+                print(f"     ⚠️  Validation Error: {str(e)[:50]}")
             
         out_dir = "Titan_Synergy_Results"
         if not os.path.exists(out_dir): os.makedirs(out_dir)
@@ -498,7 +528,13 @@ def run_pipeline(filepath_or_df, filename=None):
         with open(f"{sub_dir}/REPORT.md", "w") as f:
             f.write(f"# TITAN AUDIT: {fname}\nTarget: {target}\nAUC: {auc:.3f}\n")
             f.write(f"Threats Removed: {threats_removed}\n")
+            if validity_summary:
+                f.write(f"Validity Score: {validity_summary['validity_score']}/100 ({validity_summary['validity_level']})\n")
+            f.write("\n## Statistical Analysis\n")
             for l in stats_report: f.write(f"- {l}\n")
+            if validation_report:
+                f.write(f"\n## Validity Assessment\n")
+                f.write(validation_report)
             
         # [V53 FIX] Universal Charting Logic (Works even if calibration crashes)
         tasks = []
@@ -562,8 +598,18 @@ def run_pipeline(filepath_or_df, filename=None):
         
         compile_pdf_report(sub_dir, fname, f"Target: {target}\nAUC: {auc:.3f}\nThreats Removed: {threats_removed}", generated_charts)
         
-        log_event(fname, "SUCCESS", f"AUC {auc:.3f} | {len(generated_charts)} Charts")
-        return f"{fname}: ✅ SUCCESS (AUC {auc:.3f} | {len(generated_charts)} Charts)"
+        # Log with validity info
+        log_msg = f"AUC {auc:.3f} | {len(generated_charts)} Charts"
+        if validity_summary:
+            log_msg += f" | Validity: {validity_summary['validity_level']}"
+        log_event(fname, "SUCCESS", log_msg)
+        
+        # Return message with validity
+        success_msg = f"{fname}: ✅ SUCCESS (AUC {auc:.3f} | {len(generated_charts)} Charts"
+        if validity_summary:
+            success_msg += f" | Validity: {validity_summary['validity_level']}"
+        success_msg += ")"
+        return success_msg
         
     except Exception as e:
         log_event(fname, "ERROR", str(e)[:100])

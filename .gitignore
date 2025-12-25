@@ -18,6 +18,7 @@ all_charts/
 *.csv
 *.xlsx
 *.parquet
+Titan_Synergy_Results/test*.csv_Audit/
 
 # Local config/logs
 config.yaml
