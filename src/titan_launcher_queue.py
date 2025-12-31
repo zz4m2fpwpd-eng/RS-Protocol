@@ -4,8 +4,7 @@ import sys
 from pathlib import Path
 import multiprocessing
 
-from titan_orchestrator_v3 import run_titan_pipeline  # this is your full pipeline[file:4ea99728-0ccf-4bdc-ad1b-acda7d34efeb]
-
+from titan_orchestrator_v3 import run_titan_pipeline  
 def is_csv(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() in {".csv", ".tsv", ".txt"}
 
