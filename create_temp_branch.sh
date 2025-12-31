@@ -4,3 +4,4 @@
 
 git checkout --orphan temp_branch
 git add -A
+git commit -m "Initial commit"
