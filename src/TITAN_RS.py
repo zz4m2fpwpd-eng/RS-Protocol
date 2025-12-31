@@ -1,8 +1,8 @@
 # ==============================================================================
-# PROJECT: TITAN-RS (TITAN RS -S.A.N.D.H.U. PROTOCOL)
+# PROJECT: TITAN-RS (RS-PROTOCOL)
 # DEVELOPER: Robin Sandhu
-# VERSION: 1.0 (The Gold Standard)
-# ARCHITECTURE: Crash Guard | Vogue Visuals+ | Leak Sentinel | Py3.14 Safe
+# VERSION: 1.0
+# ARCHITECTURE: Crash Guard | Leak Sentinel | Py3.14 Safe
 # ==============================================================================
 
 import networkx as nx
@@ -36,7 +36,7 @@ except ImportError:
     print("   [NOTE] 'fpdf' missing. Outputting folders only.")
 
 # ==============================================================================
-# CONFIGURATION: VOGUE VISUALS+
+# CONFIGURATION
 # ==============================================================================
 warnings.filterwarnings("ignore")
 SAFE_CORES = max(1, multiprocessing.cpu_count() - 2)
