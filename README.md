@@ -53,6 +53,7 @@ The system bridges the gap between raw data collection and reproducible evidence
 | `TITAN_Evidence_Pro_Max.py` | Additional evidence and superiority charts. |
 | `TITAN_RS_GUI.py` | (Optional) Graphical user interface. |
 | `titan_orchestrator*.py` | Entry‑point scripts to run one or more engines. |
+| `create_temp_branch.sh` | Utility script to create a temporary orphan branch. |
 | `sample_data/` | Example datasets. |
 | `Titan_Synergy_Results/` | **Output:** Generated reports and charts appear here. |
 
