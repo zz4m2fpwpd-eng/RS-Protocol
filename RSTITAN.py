@@ -1,5 +1,5 @@
 # ==============================================================================
-# PROJECT: TITAN RS - SYNERGY (V53.0 - VOGUE VISUALS + ECLIPSE STABILITY)
+# PROJECT: TITAN RS - SYNERGY 
 # AUTHOR: Robin Sandhu
 # ARCHITECTURE: Crash Guard | Vogue Charts | Leak Sentinel | Py3.14 Safe
 # ==============================================================================
@@ -36,7 +36,7 @@ except ImportError:
     PDF_AVAILABLE = False
     print("   [NOTE] 'fpdf' missing. Outputting folders only.")
 
-# Configuration (VOGUE EDITION STYLE)
+# Configuration 
 matplotlib.use("Agg")
 plt.switch_backend('Agg') 
 warnings.filterwarnings("ignore")
@@ -452,12 +452,12 @@ def run_pipeline(filepath_or_df, filename=None):
         base_model = RandomForestClassifier(n_estimators=50, max_depth=10, n_jobs=SAFE_CORES)
         base_model.fit(X_tr, y_tr)
         
-        # [V53 FIX] CRASH GUARD + CHART RESTORATION
+        # CRASH GUARD + CHART RESTORATION
         model = base_model
         y_prob = None
         auc = 0
         
-        # [V54 UPGRADE] ROBUST CALIBRATION LOGIC
+        # ROBUST CALIBRATION LOGIC
         if len(np.unique(y))==2: 
             try:
                 # 1. Try 'prefit' (Best for big data)
@@ -500,12 +500,12 @@ def run_pipeline(filepath_or_df, filename=None):
             f.write(f"Threats Removed: {threats_removed}\n")
             for l in stats_report: f.write(f"- {l}\n")
             
-        # [V53 FIX] Universal Charting Logic (Works even if calibration crashes)
+        # Universal Charting Logic (Works even if calibration crashes)
         tasks = []
         if len(np.unique(y))==2 and y_prob is not None: 
             tasks.append(('calibration', (y_te, y_prob), sub_dir, {'fname': 'Calibration.png', 'title': 'Calibration'}))
         
-      # [V55.4 FIX] Extract Feature Importances Safely & Generate All Charts (FINAL)
+      #  Extract Feature Importances Safely & Generate All Charts (FINAL)
         importances = None
         feature_names = X.columns
         
@@ -533,7 +533,7 @@ def run_pipeline(filepath_or_df, filename=None):
             num_features = min(15, len(importances))
             top_indices = np.argsort(importances)[::-1][:num_features]
             
-            # Network Graph Data Prep (CRITICAL V55.4 FIX: Use index lookup for reliability)
+            # Network Graph Data Prep
             top_features_data = []
             
             # Iterate through the indices of the top features
