@@ -17,7 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 import warnings
 import re  # <--- CRITICAL FIX: Added missing regex module
 
-# --- EMBEDDED TITAN CORE ENGINE (V61.0 LOGIC) ---
+# --- EMBEDDED TITAN CORE ENGINE ---
 import pandas as pd
 import numpy as np
 import matplotlib
