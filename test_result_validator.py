@@ -307,8 +307,10 @@ class TestStatisticalSignificance(unittest.TestCase):
         """Test with critically low prediction variance"""
         np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
-        # All predictions very similar (std < 0.01)
-        y_pred_proba = np.full(100, 0.5) + np.random.normal(0, 0.001, 100)
+        # All predictions very similar (std < PRED_STD_CRITICAL)
+        # Use a std well below the critical threshold to ensure test reliability
+        target_std = ResultValidator.PRED_STD_CRITICAL * 0.1
+        y_pred_proba = np.full(100, 0.5) + np.random.normal(0, target_std, 100)
         
         validator = ResultValidator(
             y_true=y_true,
@@ -329,8 +331,10 @@ class TestStatisticalSignificance(unittest.TestCase):
         """Test with low but not critical variance"""
         np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
-        # Low variance (0.01 < std < 0.05)
-        y_pred_proba = np.full(100, 0.5) + np.random.normal(0, 0.03, 100)
+        # Low variance (PRED_STD_CRITICAL < std < PRED_STD_WARNING)
+        # Use the midpoint between critical and warning thresholds
+        target_std = (ResultValidator.PRED_STD_CRITICAL + ResultValidator.PRED_STD_WARNING) / 2
+        y_pred_proba = np.full(100, 0.5) + np.random.normal(0, target_std, 100)
         
         validator = ResultValidator(
             y_true=y_true,
@@ -378,9 +382,12 @@ class TestProbabilityDistribution(unittest.TestCase):
         np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Most predictions near extremes (>80% to trigger warning)
-        y_pred_proba = np.concatenate([np.random.uniform(0, 0.005, 45),
-                                       np.random.uniform(0.995, 1, 45),
-                                       np.random.uniform(0.4, 0.6, 10)])
+        # Use validator's PROB_EXTREME constants
+        y_pred_proba = np.concatenate([
+            np.random.uniform(0, ResultValidator.PROB_EXTREME_LOW / 2, 45),
+            np.random.uniform((1 + ResultValidator.PROB_EXTREME_HIGH) / 2, 1, 45),
+            np.random.uniform(ResultValidator.PROB_MIDDLE_LOW, ResultValidator.PROB_MIDDLE_HIGH, 10)
+        ])
         
         validator = ResultValidator(
             y_true=y_true,
@@ -401,8 +408,12 @@ class TestProbabilityDistribution(unittest.TestCase):
         """Test with mostly middle predictions (near 0.5)"""
         np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
-        # Most predictions near 0.5
-        y_pred_proba = np.random.uniform(0.4, 0.6, 100)
+        # Most predictions near 0.5 - use validator's PROB_MIDDLE constants
+        y_pred_proba = np.random.uniform(
+            ResultValidator.PROB_MIDDLE_LOW, 
+            ResultValidator.PROB_MIDDLE_HIGH, 
+            100
+        )
         
         validator = ResultValidator(
             y_true=y_true,
@@ -516,7 +527,9 @@ class TestValidityScoring(unittest.TestCase):
         np.random.seed(42)  # For reproducible tests
         # Small, imbalanced, low performance
         y_true = np.concatenate([np.zeros(5), np.ones(1)])
-        y_pred_proba = np.full(6, 0.5) + np.random.normal(0, 0.01, 6)
+        # Very low variance using a fraction of the critical threshold
+        target_std = ResultValidator.PRED_STD_CRITICAL * 0.1
+        y_pred_proba = np.full(6, 0.5) + np.random.normal(0, target_std, 6)
         
         validator = ResultValidator(
             y_true=y_true,
