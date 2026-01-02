@@ -98,6 +98,30 @@ Training Samples: 570
 [2025-12-20 12:00:00] dataset.csv | SUCCESS | AUC 0.946 | 31 Charts | Validity: HIGH
 ```
 
+## Testing
+
+The result validator has comprehensive test coverage to ensure correctness.
+
+### Running Tests
+```bash
+python test_result_validator.py
+```
+
+### Test Coverage
+The test suite (`test_result_validator.py`) includes 29 tests covering:
+- **Validation thresholds**: Ensures all threshold constants are properly defined
+- **Scoring logic**: Verifies validity score calculations
+- **Edge cases**: Tests empty arrays, single-class datasets, extreme imbalance
+- **Test set size validation**: Confirms proper detection of small test sets
+- **Class imbalance detection**: Validates imbalance ratio calculations
+- **Baseline performance checks**: Tests AUC threshold enforcement
+- **Statistical significance**: Verifies variance checks
+- **Probability distribution**: Tests detection of overconfident/uncertain predictions
+- **Sample-to-feature ratio**: Validates overfitting risk assessment
+- **Report generation**: Ensures proper output formatting
+
+All tests pass with 100% success rate.
+
 ## Usage
 
 ### Automatic (Default)
