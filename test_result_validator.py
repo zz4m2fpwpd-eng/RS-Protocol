@@ -55,6 +55,7 @@ class TestTestSetSizeValidation(unittest.TestCase):
     
     def test_adequate_test_set(self):
         """Test with adequate samples per class"""
+        np.random.seed(42)  # For reproducible tests
         # 50 samples per class - should be fine
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
@@ -75,6 +76,7 @@ class TestTestSetSizeValidation(unittest.TestCase):
     
     def test_critical_small_test_set(self):
         """Test with critically small test set (<10 samples per class)"""
+        np.random.seed(42)  # For reproducible tests
         # 5 samples per class - critical
         y_true = np.concatenate([np.zeros(5), np.ones(5)])
         y_pred_proba = np.random.rand(10)
@@ -96,6 +98,7 @@ class TestTestSetSizeValidation(unittest.TestCase):
     
     def test_warning_small_test_set(self):
         """Test with small test set (10-30 samples per class)"""
+        np.random.seed(42)  # For reproducible tests
         # 15 samples per class - warning level
         y_true = np.concatenate([np.zeros(15), np.ones(15)])
         y_pred_proba = np.random.rand(30)
@@ -121,6 +124,7 @@ class TestClassImbalanceValidation(unittest.TestCase):
     
     def test_balanced_classes(self):
         """Test with balanced classes"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -141,6 +145,7 @@ class TestClassImbalanceValidation(unittest.TestCase):
     
     def test_single_class_dataset(self):
         """Test with only one class (edge case)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.ones(100)  # All same class
         y_pred_proba = np.random.rand(100)
         
@@ -162,6 +167,7 @@ class TestClassImbalanceValidation(unittest.TestCase):
     
     def test_extreme_imbalance(self):
         """Test with extreme imbalance ratio (>100:1)"""
+        np.random.seed(42)  # For reproducible tests
         # 200:1 ratio
         y_true = np.concatenate([np.zeros(200), np.ones(1)])
         y_pred_proba = np.random.rand(201)
@@ -183,6 +189,7 @@ class TestClassImbalanceValidation(unittest.TestCase):
     
     def test_moderate_imbalance(self):
         """Test with moderate imbalance ratio (20-100:1)"""
+        np.random.seed(42)  # For reproducible tests
         # 30:1 ratio
         y_true = np.concatenate([np.zeros(90), np.ones(3)])
         y_pred_proba = np.random.rand(93)
@@ -208,6 +215,7 @@ class TestBaselinePerformance(unittest.TestCase):
     
     def test_good_performance(self):
         """Test with good AUC (>0.7)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -228,6 +236,7 @@ class TestBaselinePerformance(unittest.TestCase):
     
     def test_below_random_chance(self):
         """Test with AUC below random chance (<0.5)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -248,6 +257,7 @@ class TestBaselinePerformance(unittest.TestCase):
     
     def test_barely_above_baseline(self):
         """Test with AUC barely above random (0.5-0.55)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -272,6 +282,7 @@ class TestStatisticalSignificance(unittest.TestCase):
     
     def test_good_variance(self):
         """Test with good prediction variance"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Good variance in predictions
         y_pred_proba = np.concatenate([np.random.uniform(0.1, 0.4, 50),
@@ -294,6 +305,7 @@ class TestStatisticalSignificance(unittest.TestCase):
     
     def test_critical_low_variance(self):
         """Test with critically low prediction variance"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # All predictions very similar (std < 0.01)
         y_pred_proba = np.full(100, 0.5) + np.random.normal(0, 0.001, 100)
@@ -315,6 +327,7 @@ class TestStatisticalSignificance(unittest.TestCase):
     
     def test_warning_low_variance(self):
         """Test with low but not critical variance"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Low variance (0.01 < std < 0.05)
         y_pred_proba = np.full(100, 0.5) + np.random.normal(0, 0.03, 100)
@@ -340,6 +353,7 @@ class TestProbabilityDistribution(unittest.TestCase):
     
     def test_reasonable_distribution(self):
         """Test with reasonable probability distribution"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Mixed distribution
         y_pred_proba = np.random.beta(2, 2, 100)
@@ -361,6 +375,7 @@ class TestProbabilityDistribution(unittest.TestCase):
     
     def test_overconfident_predictions(self):
         """Test with mostly extreme predictions (near 0 or 1)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Most predictions near extremes (>80% to trigger warning)
         y_pred_proba = np.concatenate([np.random.uniform(0, 0.005, 45),
@@ -384,6 +399,7 @@ class TestProbabilityDistribution(unittest.TestCase):
     
     def test_uncertain_predictions(self):
         """Test with mostly middle predictions (near 0.5)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         # Most predictions near 0.5
         y_pred_proba = np.random.uniform(0.4, 0.6, 100)
@@ -409,6 +425,7 @@ class TestSampleFeatureRatio(unittest.TestCase):
     
     def test_adequate_ratio(self):
         """Test with adequate sample-to-feature ratio (>10:1)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -429,6 +446,7 @@ class TestSampleFeatureRatio(unittest.TestCase):
     
     def test_critical_low_ratio(self):
         """Test with critically low ratio (<3:1)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -449,6 +467,7 @@ class TestSampleFeatureRatio(unittest.TestCase):
     
     def test_warning_low_ratio(self):
         """Test with low ratio (3-10:1)"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -473,6 +492,7 @@ class TestValidityScoring(unittest.TestCase):
     
     def test_perfect_scenario(self):
         """Test with ideal data - should have high validity score"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(100), np.ones(100)])
         y_pred_proba = np.concatenate([np.random.uniform(0.1, 0.4, 100),
                                        np.random.uniform(0.6, 0.9, 100)])
@@ -493,6 +513,7 @@ class TestValidityScoring(unittest.TestCase):
     
     def test_questionable_scenario(self):
         """Test with many issues - should have low validity score"""
+        np.random.seed(42)  # For reproducible tests
         # Small, imbalanced, low performance
         y_true = np.concatenate([np.zeros(5), np.ones(1)])
         y_pred_proba = np.full(6, 0.5) + np.random.normal(0, 0.01, 6)
@@ -536,6 +557,7 @@ class TestReportGeneration(unittest.TestCase):
     
     def test_get_report(self):
         """Test that get_report generates valid report string"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -559,6 +581,7 @@ class TestReportGeneration(unittest.TestCase):
     
     def test_get_summary_dict(self):
         """Test that get_summary_dict returns valid dictionary"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
@@ -587,6 +610,7 @@ class TestConvenienceFunction(unittest.TestCase):
     
     def test_validate_results_function(self):
         """Test that convenience function works correctly"""
+        np.random.seed(42)  # For reproducible tests
         y_true = np.concatenate([np.zeros(50), np.ones(50)])
         y_pred_proba = np.random.rand(100)
         
